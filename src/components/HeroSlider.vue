@@ -102,11 +102,6 @@ const swiperOptions = {
           </p>
 
           <div v-if="slide.button_text">
-            <!-- <a :href="slide.button_link || '#'"
-               class="bg-green-600 hover:bg-green-500 text-white text-xs md:text-base font-bold py-2 px-6 rounded-full shadow-lg transition transform hover:-translate-y-1 inline-flex items-center">
-              {{ slide.button_text }}
-              <span class="material-icons text-sm ml-1">arrow_forward</span>
-            </a> -->
             <a
               :href="slide.button_link || '#'"
               target="_blank"

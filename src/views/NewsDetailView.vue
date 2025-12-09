@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
 import AppHeader from '@/components/AppHeader.vue'
+import api from '@/axios'
 
 const route = useRoute()
 const news = ref(null)
@@ -10,7 +10,7 @@ const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/news/${route.params.slug}`)
+    const response = await api.get(`/api/news/${route.params.slug}`)
     news.value = response.data.data
   } catch (error) {
     console.error(error)
@@ -28,8 +28,8 @@ onMounted(async () => {
     <!-- ১. স্কেলেটন লোডার (Dark Mode Supported) -->
     <div v-if="loading" class="container mx-auto px-4 py-10 animate-pulse">
       <div
-        class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-transparent dark:border-gray-700">
-
+        class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-transparent dark:border-gray-700"
+      >
         <!-- Featured Image Skeleton -->
         <div class="h-64 md:h-96 w-full bg-gray-300 dark:bg-gray-700 relative">
           <div class="absolute bottom-0 left-0 w-full p-6">
@@ -55,25 +55,35 @@ onMounted(async () => {
             <div class="h-5 bg-gray-300 dark:bg-gray-600 rounded w-40"></div>
           </div>
         </div>
-
       </div>
     </div>
 
     <!-- ২. আসল কন্টেন্ট (Real Content) -->
     <div v-else-if="news" class="container mx-auto px-4 py-10">
       <div
-        class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-transparent dark:border-gray-700 transition-colors duration-300">
-
+        class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-transparent dark:border-gray-700 transition-colors duration-300"
+      >
         <!-- Featured Image -->
         <div class="h-64 md:h-96 w-full relative">
-          <img :src="news.image || 'https://placehold.co/800x400'" :alt="news.title" class="w-full h-full object-cover">
+          <img
+            :src="news.image || 'https://placehold.co/800x400'"
+            :alt="news.title"
+            class="w-full h-full object-cover"
+          />
           <!-- Gradient Overlay -->
-          <div class="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full p-6 pt-20">
+          <div
+            class="absolute bottom-0 left-0 bg-gradient-to-t from-black to-transparent w-full p-6 pt-20"
+          >
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">{{ news.title }}</h1>
             <div class="flex items-center text-gray-200 text-sm">
-              <span class="mr-4"><span class="material-icons text-sm align-middle">calendar_today</span> {{ news.date
-                }}</span>
-              <span><span class="material-icons text-sm align-middle">person</span> {{ news.author || 'Admin' }}</span>
+              <span class="mr-4"
+                ><span class="material-icons text-sm align-middle">calendar_today</span>
+                {{ news.date }}</span
+              >
+              <span
+                ><span class="material-icons text-sm align-middle">person</span>
+                {{ news.author || 'Admin' }}</span
+              >
             </div>
           </div>
         </div>
@@ -81,18 +91,21 @@ onMounted(async () => {
         <!-- Content -->
         <div class="p-8 md:p-12">
           <!-- Prose style handles dark mode via CSS below -->
-          <div class="prose prose-lg max-w-none text-gray-700 dark:text-gray-300 leading-relaxed" v-html="news.content">
-          </div>
+          <div
+            class="prose prose-lg max-w-none text-gray-700 dark:text-gray-300 leading-relaxed"
+            v-html="news.content"
+          ></div>
 
           <!-- Back Button -->
           <div class="mt-10 pt-6 border-t border-gray-100 dark:border-gray-700">
-            <router-link to="/"
-              class="inline-flex items-center text-green-700 dark:text-green-400 font-bold hover:underline transition-colors">
+            <router-link
+              to="/"
+              class="inline-flex items-center text-green-700 dark:text-green-400 font-bold hover:underline transition-colors"
+            >
               <span class="material-icons mr-1">arrow_back</span> হোমপেজে ফিরে যান
             </router-link>
           </div>
         </div>
-
       </div>
     </div>
 
@@ -106,7 +119,7 @@ onMounted(async () => {
 
 <style scoped>
 /* ✅ FIX: Tailwind Import for @apply in v4 */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Rich Text Dark Mode Support */
 :deep(.prose h2) {

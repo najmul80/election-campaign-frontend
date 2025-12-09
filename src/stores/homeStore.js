@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import api from '@/axios'
 
 export const useHomeStore = defineStore('home', {
   state: () => ({
@@ -13,7 +13,7 @@ export const useHomeStore = defineStore('home', {
     quotes: [],
     news: [],
     loading: false,
-    error: null
+    error: null,
   }),
 
   actions: {
@@ -22,7 +22,7 @@ export const useHomeStore = defineStore('home', {
 
       try {
         // আপনার ব্যাকএন্ড API URL
-        const response = await axios.get('http://127.0.0.1:8000/api/home-data')
+        const response = await api.get('/api/home-data')
 
         const data = response.data.data
 
@@ -35,7 +35,6 @@ export const useHomeStore = defineStore('home', {
         this.videos = data.videos
         this.quotes = data.quotes
         this.news = data.news
-
       } catch (err) {
         console.error('API Error:', err)
         this.error = 'ডাটা লোড করতে সমস্যা হচ্ছে।'
@@ -44,6 +43,6 @@ export const useHomeStore = defineStore('home', {
           this.loading = false
         }, 3000)
       }
-    }
-  }
+    },
+  },
 })
