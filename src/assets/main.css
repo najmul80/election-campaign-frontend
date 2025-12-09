@@ -1,0 +1,50 @@
+@import 'tailwindcss';
+
+/* ✅ এই লাইনটি যুক্ত করুন (এটি সিস্টেম সেটিংস ইগনোর করে ক্লাসের ওপর নির্ভর করবে) */
+@variant dark (&:where(.dark, .dark *));
+
+/* ফন্ট সেটআপ */
+@font-face {
+  font-family: 'Li Ador Noirrit';
+  src: url('./fonts/Li_Ador_Noirrit_Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: 'Li Ador Noirrit', 'Noto Sans Bengali', sans-serif;
+}
+
+@layer base {
+  html {
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    /* ডিফল্ট (লাইট মোড) */
+    @apply bg-gray-50 text-gray-800 transition-colors duration-300;
+  }
+
+  /* ডার্ক মোড অ্যাক্টিভ হলে */
+  :root.dark body {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
+/* অ্যানিমেশন */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
