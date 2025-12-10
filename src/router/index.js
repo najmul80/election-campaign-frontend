@@ -4,9 +4,9 @@ import NewsDetailView from '../views/NewsDetailView.vue'
 import AllNewsView from '../views/AllNewsView.vue'
 import AllGalleryView from '../views/AllGalleryView.vue'
 import CandidateDetailView from '../views/CandidateDetailView.vue'
-import AllVideoView from '@/components/AllVideoView.vue'
+import AllVideoView from '@/views/AllVideoView.vue'
 import ProgramDetailView from '@/views/ProgramDetailView.vue'
-
+import AllPosterView from '../views/AllPosterView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,14 +31,18 @@ const router = createRouter({
     {
       path: '/all-videos',
       name: 'all-videos',
-      component: AllVideoView
+      component: AllVideoView,
     },
     {
       path: '/program/:id',
       name: 'program-detail',
-      component: ProgramDetailView
+      component: ProgramDetailView,
     },
-
+    {
+      path: '/all-posters',
+      name: 'all-posters',
+      component: AllPosterView,
+    },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {

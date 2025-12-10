@@ -20,21 +20,20 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- Main Wrapper: Dark Mode Background Added -->
+  <!-- ✅ FIX: pt-24 (Mobile) এবং md:pt-28 (PC) যোগ করা হয়েছে -->
   <div
-    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col transition-colors duration-300"
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col transition-colors duration-300 pt-24 md:pt-28"
   >
     <AppHeader />
 
     <div class="container mx-auto px-4 py-10 md:py-10 flex-grow">
-      <!-- Title: Dark Mode Text Added -->
+      <!-- Title -->
       <h1 class="text-4xl font-bold text-center mb-12 text-gray-800 dark:text-white">
         সম্পূর্ণ ফটো গ্যালারী
       </h1>
 
       <!-- ১. স্কেলেটন লোডার (Dark Mode Supported) -->
       <div v-if="loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <!-- ১২টি স্কেলেটন বক্স -->
         <div
           v-for="n in 12"
           :key="n"
@@ -42,7 +41,7 @@ onMounted(async () => {
         ></div>
       </div>
 
-      <!-- ২. আসল কন্টেন্ট (Real Content) -->
+      <!-- ২. আসল কন্টেন্ট -->
       <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <div
           v-for="item in gallery"
@@ -54,7 +53,7 @@ onMounted(async () => {
             class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
           />
 
-          <!-- Overlay (Text always white on black overlay, works for both modes) -->
+          <!-- Overlay -->
           <div
             class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-end p-4"
           >
@@ -63,7 +62,7 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- ৩. যদি কোনো ডাটা না থাকে (Empty State) -->
+      <!-- ৩. ডাটা না থাকলে (Empty State) -->
       <div
         v-if="!loading && gallery.length === 0"
         class="text-center py-20 text-gray-400 dark:text-gray-500"
