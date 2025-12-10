@@ -44,14 +44,14 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- Main Wrapper: Dark Mode Background Added -->
+  <!-- ✅ FIX: pt-24 (Mobile) & md:pt-28 (PC) যোগ করা হয়েছে হেডারের গ্যাপের জন্য -->
   <div
-    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col transition-colors duration-300"
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col transition-colors duration-300 pt-24 md:pt-28"
   >
     <AppHeader />
 
-    <!-- ১. স্কেলেটন লোডার (Dark Mode Supported) -->
-    <div v-if="loading" class="container mx-auto px-4 py-12 flex-grow animate-pulse">
+    <!-- ১. স্কেলেটন লোডার -->
+    <div v-if="loading" class="container mx-auto px-4 py-6 flex-grow animate-pulse">
       <div
         class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-transparent dark:border-gray-700"
       >
@@ -106,8 +106,8 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- ২. আসল কন্টেন্ট (Real Content) -->
-    <div v-else-if="program" class="container mx-auto px-4 py-12 flex-grow">
+    <!-- ২. আসল কন্টেন্ট -->
+    <div v-else-if="program" class="container mx-auto px-4 py-6 flex-grow">
       <div
         class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-transparent dark:border-gray-700 transition-colors duration-300"
       >
@@ -163,11 +163,7 @@ onMounted(async () => {
           </div>
 
           <!-- Description -->
-          <div
-            class="prose prose-lg max-w-none text-gray-600 dark:text-gray-300 leading-relaxed text-justify mb-8"
-          >
-            <div v-html="program.description"></div>
-          </div>
+          <div class="prose-content text-justify mb-8" v-html="program.description"></div>
 
           <!-- Action Buttons -->
           <div
@@ -192,7 +188,7 @@ onMounted(async () => {
     </div>
 
     <!-- ৩. এরর স্টেট -->
-    <div v-else class="text-center py-20 flex-grow">
+    <div v-else class="text-center py-20 flex-grow pt-32">
       <h2 class="text-2xl text-red-500 mb-4">কর্মসূচির তথ্য পাওয়া যায়নি!</h2>
       <router-link to="/" class="text-blue-500 underline">হোমপেজে ফিরে যান</router-link>
     </div>
@@ -202,22 +198,46 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* Tailwind Import for @apply in v4 */
-@import 'tailwindcss';
+/* ✅ FIX: ম্যানুয়াল CSS ব্যবহার করা হয়েছে যাতে ডার্ক মোড এবং টেলউইন্ড কনফ্লিক্ট না করে */
 
-:deep(.prose h2) {
-  @apply text-gray-800 dark:text-white font-bold mt-6 mb-2 text-2xl;
+/* Light Mode Styles */
+:deep(.prose-content h2) {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: #1f2937; /* gray-800 */
 }
 
-:deep(.prose p) {
-  @apply mb-4 text-gray-600 dark:text-gray-300;
+:deep(.prose-content p) {
+  margin-bottom: 1rem;
+  color: #4b5563; /* gray-600 */
+  line-height: 1.75;
 }
 
-:deep(.prose ul) {
-  @apply list-disc pl-6 mb-4 text-gray-600 dark:text-gray-300;
+:deep(.prose-content ul) {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-bottom: 1rem;
+  color: #4b5563;
 }
 
-:deep(.prose strong) {
-  @apply font-bold text-gray-900 dark:text-white;
+:deep(.prose-content strong) {
+  font-weight: bold;
+  color: #111827;
+}
+
+/* Dark Mode Overrides (Global selector দিয়ে) */
+:global(.dark) :deep(.prose-content h2) {
+  color: #ffffff;
+}
+
+:global(.dark) :deep(.prose-content p),
+:global(.dark) :deep(.prose-content ul) {
+  color: #d1d5db; /* gray-300 */
+}
+
+:global(.dark) :deep(.prose-content strong) {
+  color: #ffffff;
 }
 </style>

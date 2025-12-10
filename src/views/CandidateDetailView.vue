@@ -15,7 +15,6 @@ const getEmbedUrl = (url) => {
   if (!url) return null
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
   const match = url.match(regExp)
-
   return match && match[2].length === 11 ? 'https://www.youtube.com/embed/' + match[2] : null
 }
 
@@ -36,20 +35,18 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- Main Wrapper: Dark Mode Background Added -->
+  <!-- ✅ FIX: pt-24 (মোবাইল) এবং md:pt-28 (ডেস্কটপ) যোগ করা হয়েছে যাতে হেডারের নিচে গ্যাপ তৈরি হয় -->
   <div
-    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col transition-colors duration-300"
+    class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col transition-colors duration-300 pt-24 md:pt-28"
   >
     <AppHeader />
 
-    <!-- Skeleton Loader (Dark Mode Supported) -->
-    <div v-if="loading" class="animate-pulse container mx-auto px-4 py-12 flex-grow">
-      <!-- Top Profile & Video Skeleton -->
+    <!-- Skeleton Loader -->
+    <div v-if="loading" class="animate-pulse container mx-auto px-4 py-6 flex-grow">
       <div
         class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mb-8 border border-transparent dark:border-gray-700"
       >
         <div class="md:flex">
-          <!-- Left: Profile Skeleton -->
           <div
             class="md:w-1/3 bg-gray-200 dark:bg-gray-700 p-8 flex flex-col items-center justify-center h-[400px]"
           >
@@ -60,15 +57,12 @@ onMounted(async () => {
             <div class="h-6 bg-gray-300 dark:bg-gray-600 rounded-full w-1/2 mb-2"></div>
             <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
           </div>
-          <!-- Right: Video Skeleton -->
           <div class="md:w-2/3 p-8">
             <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
             <div class="aspect-video bg-gray-300 dark:bg-gray-700 rounded-lg w-full"></div>
           </div>
         </div>
       </div>
-
-      <!-- Biography Skeleton -->
       <div
         class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 md:p-12 border border-transparent dark:border-gray-700"
       >
@@ -76,26 +70,23 @@ onMounted(async () => {
         <div class="space-y-4">
           <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
           <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
           <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5"></div>
         </div>
       </div>
     </div>
 
-    <!-- Candidate Content (Dark Mode Added) -->
-    <div v-else-if="candidate" class="container mx-auto px-4 py-12 flex-grow">
-      <!-- Top Section: Photo & Basic Info -->
+    <!-- Candidate Content -->
+    <div v-else-if="candidate" class="container mx-auto px-4 py-6 flex-grow">
+      <!-- Top Section -->
       <div
         class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mb-8 border border-transparent dark:border-gray-700 transition-colors"
       >
         <div class="md:flex">
-          <!-- Left: Photo Area (Gradient stays same, looks good in dark mode) -->
+          <!-- Photo Area -->
           <div
             class="md:w-1/3 bg-gradient-to-br from-green-600 to-teal-800 p-8 flex flex-col items-center justify-center text-center text-white relative"
           >
             <div class="relative mb-6">
-              <!-- Candidate Image -->
               <div
                 class="inline-flex items-center justify-center rounded-full border-8 border-white dark:border-gray-300"
               >
@@ -106,8 +97,6 @@ onMounted(async () => {
                   />
                 </div>
               </div>
-
-              <!-- Symbol Badge -->
               <div
                 class="absolute bottom-0 right-0 rounded-full p-px bg-gradient-to-r from-red-500 to-orange-500 shadow-lg w-16 h-16 flex items-center justify-center transform group-hover:rotate-12 transition duration-500 z-20"
               >
@@ -117,7 +106,6 @@ onMounted(async () => {
                 />
               </div>
             </div>
-
             <h1 class="text-3xl font-bold mb-2">{{ candidate.name }}</h1>
             <div class="bg-white/20 px-4 py-1 rounded-full mb-2">
               <p class="font-semibold">{{ candidate.constituency }}</p>
@@ -125,14 +113,13 @@ onMounted(async () => {
             <p class="opacity-90">{{ candidate.designation }}</p>
           </div>
 
-          <!-- Right: Video -->
+          <!-- Video Section -->
           <div class="md:w-2/3 p-8">
             <h2
               class="text-2xl font-bold text-gray-800 dark:text-white mb-6 border-b dark:border-gray-700 pb-2"
             >
               পরিচিতি ভিডিও
             </h2>
-
             <div
               v-if="candidate.video_link"
               class="aspect-video rounded-lg overflow-hidden bg-black shadow-lg"
@@ -164,13 +151,9 @@ onMounted(async () => {
           জীবন বৃত্তান্ত ও ভিশন
         </h2>
 
-        <!-- Prose style handles dark mode via CSS below -->
-        <div
-          class="prose prose-lg max-w-none text-gray-700 dark:text-gray-300 leading-relaxed text-justify"
-          v-html="candidate.biography"
-        ></div>
+        <!-- Rich Text Content -->
+        <div class="prose-content text-justify" v-html="candidate.biography"></div>
 
-        <!-- Back Button -->
         <div class="mt-10 pt-6 border-t dark:border-gray-700">
           <router-link
             to="/"
@@ -193,20 +176,41 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* ✅ FIX: Tailwind Import Added for @apply to work in v4 */
-@import 'tailwindcss';
+/* Rich Text Styles (Manual CSS to avoid Tailwind conflict) */
+:deep(.prose-content p) {
+  margin-bottom: 1rem;
+  color: #374151; /* gray-700 */
+  line-height: 1.75;
+}
 
-/* Rich Text Dark Mode Support */
-:deep(.prose h2) {
-  @apply text-gray-800 dark:text-white font-bold mt-6 mb-2 text-2xl;
+:deep(.prose-content h2) {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: #1f2937; /* gray-800 */
 }
-:deep(.prose ul) {
-  @apply list-disc pl-6 mb-4 text-gray-700 dark:text-gray-300;
+
+:deep(.prose-content ul) {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-bottom: 1rem;
+  color: #374151;
 }
-:deep(.prose p) {
-  @apply mb-4 text-gray-700 dark:text-gray-300;
+
+:deep(.prose-content strong) {
+  font-weight: bold;
+  color: #111827;
 }
-:deep(.prose strong) {
-  @apply font-bold text-gray-900 dark:text-white;
+
+/* Dark Mode Overrides */
+:global(.dark) :deep(.prose-content p),
+:global(.dark) :deep(.prose-content ul) {
+  color: #d1d5db; /* gray-300 */
+}
+
+:global(.dark) :deep(.prose-content h2),
+:global(.dark) :deep(.prose-content strong) {
+  color: #ffffff;
 }
 </style>
