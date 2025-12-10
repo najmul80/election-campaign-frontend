@@ -16,10 +16,13 @@ const props = defineProps({
 const activeTab = ref('all')
 
 const filteredImages = computed(() => {
+
+    const imagesWithoutPosters = props.gallery.filter(item => item.category !== 'poster')
+
     if (activeTab.value === 'all') {
-        return props.gallery
+        return imagesWithoutPosters
     }
-    return props.gallery.filter(item => item.category === activeTab.value)
+    return imagesWithoutPosters.filter(item => item.category === activeTab.value)
 })
 
 const tabs = [

@@ -9,9 +9,27 @@ const loading = ref(true)
 const currentPage = ref(1)
 const lastPage = ref(1)
 
+// বর্তমানে কোন ভিডিওটি প্লে হচ্ছে তার ID রাখার জন্য
+const playingVideoId = ref(null)
+
+const playVideo = (id) => {
+  playingVideoId.value = id
+}
+
+// থাম্বনেইল পাওয়ার লজিক (আপলোড করা অথবা ইউটিউব অটোমেটিক)
+const getThumbnail = (video) => {
+  if (video.thumbnail) {
+    return video.thumbnail
+  }
+  return `https://img.youtube.com/vi/${video.youtube_code}/hqdefault.jpg`
+}
+
 // ডাটা আনার ফাংশন
 const fetchVideos = async (page = 1) => {
   loading.value = true
+  // পেজ চেঞ্জ হলে প্লে হওয়া ভিডিও বন্ধ করা
+  playingVideoId.value = null
+  
   try {
     const response = await api.get(`/api/videos?page=${page}`)
     videos.value = response.data.data
@@ -40,7 +58,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- ✅ FIX: pt-24 (Mobile) এবং md:pt-28 (PC) প্যাডিং যোগ করা হয়েছে -->
   <div
     class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col transition-colors duration-300 pt-24 md:pt-28"
   >
@@ -51,7 +68,7 @@ onMounted(() => {
         ভিডিও গ্যালারী
       </h1>
 
-      <!-- ১. স্কেলেটন লোডার (Skeleton Loader) -->
+      <!-- ১. স্কেলেটন লোডার -->
       <div v-if="loading" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <div
           v-for="n in 8"
@@ -73,18 +90,39 @@ onMounted(() => {
           <div
             v-for="video in videos"
             :key="video.id"
-            class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 border border-transparent dark:border-gray-700"
+            class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 border border-transparent dark:border-gray-700 group"
           >
-            <!-- Video Embed -->
-            <div class="aspect-video w-full">
-              <iframe
-                class="w-full h-full"
-                :src="`https://www.youtube.com/embed/${video.youtube_code}`"
-                title="YouTube video"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              ></iframe>
+            <!-- Video Wrapper (16:9) -->
+            <div class="aspect-video w-full relative bg-black cursor-pointer">
+                
+                <!-- A. যদি ভিডিও প্লে অবস্থায় থাকে -->
+                <iframe 
+                    v-if="playingVideoId === video.id"
+                    class="w-full h-full"
+                    :src="`https://www.youtube.com/embed/${video.youtube_code}?autoplay=1`"
+                    title="YouTube video"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                ></iframe>
+
+                <!-- B. যদি ভিডিও প্লে না থাকে (থাম্বনেইল দেখাবে) -->
+                <div v-else @click="playVideo(video.id)" class="w-full h-full relative">
+                    <!-- Thumbnail Image -->
+                    <img 
+                        :src="getThumbnail(video)" 
+                        class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-300"
+                        :alt="video.title"
+                    >
+                    
+                    <!-- Play Button Overlay -->
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <span class="material-icons text-white text-3xl ml-1">play_arrow</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Title -->
@@ -123,7 +161,10 @@ onMounted(() => {
         </div>
 
         <!-- Empty State -->
-        <div v-if="videos.length === 0" class="text-center py-20 text-gray-400 dark:text-gray-500">
+        <div
+          v-if="videos.length === 0"
+          class="text-center py-20 text-gray-400 dark:text-gray-500"
+        >
           <span class="material-icons text-4xl mb-2">videocam_off</span>
           <p>কোনো ভিডিও পাওয়া যায়নি।</p>
         </div>

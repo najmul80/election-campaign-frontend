@@ -10,7 +10,9 @@ const loading = ref(true)
 onMounted(async () => {
   try {
     const response = await api.get('/api/gallery')
-    gallery.value = response.data.data
+
+    const allData = response.data.data
+    gallery.value = allData.filter((item) => item.category !== 'poster')
   } catch (error) {
     console.error(error)
   } finally {
@@ -20,7 +22,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- ✅ FIX: pt-24 (Mobile) এবং md:pt-28 (PC) যোগ করা হয়েছে -->
+
   <div
     class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col transition-colors duration-300 pt-24 md:pt-28"
   >
