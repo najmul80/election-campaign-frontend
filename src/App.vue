@@ -4,6 +4,9 @@ import { RouterView } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useHomeStore } from '@/stores/homeStore'
 
+// ✅ নতুন কম্পোনেন্ট ইম্পোর্ট
+import PopupModal from '@/components/PopupModal.vue'
+
 const store = useHomeStore()
 const { settings } = storeToRefs(store)
 
@@ -29,4 +32,6 @@ watch(settings, (newSettings) => {
 
 <template>
   <RouterView />
+  
+  <PopupModal />
 </template>

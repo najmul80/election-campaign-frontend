@@ -100,14 +100,13 @@ const defaultLogo = '/logo.png'
         </div>
 
         <!-- 4. Address (Full Width on Mobile) -->
-        <!-- ✅ col-span-2 দেওয়া হয়েছে যাতে মোবাইলে ঠিকানা সেকশনটি পুরো জায়গা নেয় এবং নিচে সুন্দরভাবে দেখায় -->
         <div class="col-span-2 lg:col-span-1 flex flex-col items-center lg:items-end text-center lg:text-right mt-4 lg:mt-0">
           <h3 class="text-lg font-bold uppercase tracking-wider mb-6 border-b-2 border-green-500 pb-2 inline-block text-white dark:text-gray-200">
             ঠিকানা
           </h3>
           <ul class="space-y-5 w-full flex flex-col items-center lg:items-end">
-            <li v-if="store.settings?.address" class="flex flex-col lg:flex-row items-center gap-3 group">
-              <span class="text-gray-400 dark:text-gray-300 text-sm lg:max-w-[200px] order-2 lg:order-1">{{ store.settings.address }}</span>
+            <li v-if="store.settings?.contact_address" class="flex flex-col lg:flex-row items-center gap-3 group">
+              <span class="text-gray-400 dark:text-gray-300 text-sm lg:max-w-[200px] order-2 lg:order-1">{{ store.settings.contact_address }}</span>
               <div class="w-10 h-10 bg-gray-800 dark:bg-gray-900 rounded-full flex items-center justify-center group-hover:bg-green-600 transition shrink-0 order-1 lg:order-2 shadow-md">
                 <span class="material-icons text-green-500 group-hover:text-white transition">location_on</span>
               </div>
