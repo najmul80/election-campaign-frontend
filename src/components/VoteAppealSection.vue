@@ -55,7 +55,8 @@ const siteName = computed(() => {
       <div class="text-center md:text-left text-white">
         <!-- ৩. টেক্সট কালার: সলিড সাদা (White) -->
         <h2 class="text-3xl md:text-5xl font-bold mb-3 text-white drop-shadow-md">
-          <span class="text-yellow-300">{{ siteName }}</span>য় ভোট দিন
+          <span class="text-yellow-300">{{ siteName }}</span
+          >য় ভোট দিন
         </h2>
 
         <p class="text-green-100 dark:text-green-300 text-lg md:text-xl font-medium tracking-wide">

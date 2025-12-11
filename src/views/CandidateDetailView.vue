@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHomeStore } from '@/stores/homeStore'
 import AppHeader from '@/components/AppHeader.vue'
@@ -10,6 +10,7 @@ const route = useRoute()
 const store = useHomeStore()
 const candidate = ref(null)
 const loading = ref(true)
+const activeTab = ref(0) // বর্তমানে কোন ট্যাব ওপেন আছে
 
 const getEmbedUrl = (url) => {
   if (!url) return null
@@ -26,6 +27,11 @@ onMounted(async () => {
   try {
     const response = await api.get(`/api/candidate/${route.params.id}`)
     candidate.value = response.data.data
+
+    // ডাটা যদি পুরনো স্ট্রিং ফরমেটে থাকে, তবে সেটাকে অ্যারেতে কনভার্ট করে নিব (সেফটির জন্য)
+    if (candidate.value && typeof candidate.value.biography === 'string') {
+      candidate.value.biography = [{ title: 'জীবন বৃত্তান্ত', content: candidate.value.biography }]
+    }
   } catch (error) {
     console.error(error)
   } finally {
@@ -35,95 +41,91 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- ✅ FIX: pt-24 (মোবাইল) এবং md:pt-28 (ডেস্কটপ) যোগ করা হয়েছে যাতে হেডারের নিচে গ্যাপ তৈরি হয় -->
   <div
     class="bg-gray-50 dark:bg-gray-900 min-h-screen flex flex-col transition-colors duration-300 pt-24 md:pt-28"
   >
     <AppHeader />
 
     <!-- Skeleton Loader -->
-    <div v-if="loading" class="animate-pulse container mx-auto px-4 py-6 flex-grow">
-      <div
-        class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mb-8 border border-transparent dark:border-gray-700"
-      >
-        <div class="md:flex">
-          <div
-            class="md:w-1/3 bg-gray-200 dark:bg-gray-700 p-8 flex flex-col items-center justify-center h-[400px]"
-          >
-            <div
-              class="w-48 h-48 bg-gray-300 dark:bg-gray-600 rounded-full mb-6 border-4 border-white dark:border-gray-600"
-            ></div>
-            <div class="h-8 bg-gray-300 dark:bg-gray-600 rounded w-3/4 mb-3"></div>
-            <div class="h-6 bg-gray-300 dark:bg-gray-600 rounded-full w-1/2 mb-2"></div>
-            <div class="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
-          </div>
-          <div class="md:w-2/3 p-8">
-            <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
-            <div class="aspect-video bg-gray-300 dark:bg-gray-700 rounded-lg w-full"></div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 md:p-12 border border-transparent dark:border-gray-700"
-      >
-        <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-8"></div>
-        <div class="space-y-4">
-          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+    <div v-if="loading" class="container mx-auto px-4 py-8 animate-pulse">
+      <div class="grid lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-4 bg-gray-200 dark:bg-gray-800 rounded-2xl h-96"></div>
+        <div class="lg:col-span-8 space-y-4">
+          <div class="h-12 bg-gray-200 dark:bg-gray-800 rounded-lg w-full"></div>
+          <div class="h-96 bg-gray-200 dark:bg-gray-800 rounded-2xl"></div>
         </div>
       </div>
     </div>
 
-    <!-- Candidate Content -->
-    <div v-else-if="candidate" class="container mx-auto px-4 py-6 flex-grow">
-      <!-- Top Section -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mb-8 border border-transparent dark:border-gray-700 transition-colors"
-      >
-        <div class="md:flex">
-          <!-- Photo Area -->
+    <!-- Main Content -->
+    <div v-else-if="candidate" class="container mx-auto px-4 py-8 flex-grow">
+      <div class="grid lg:grid-cols-12 gap-8 items-start">
+        <!-- ১. বাম পাশের সাইডবার (Sticky Profile) -->
+        <div class="lg:col-span-4 lg:sticky lg:top-32">
           <div
-            class="md:w-1/3 bg-gradient-to-br from-green-600 to-teal-800 p-8 flex flex-col items-center justify-center text-center text-white relative"
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700"
           >
-            <div class="relative mb-6">
+            <!-- Top Gradient Pattern -->
+            <div class="h-32 bg-gradient-to-r from-green-600 to-teal-700 relative">
               <div
-                class="inline-flex items-center justify-center rounded-full border-8 border-white dark:border-gray-300"
-              >
-                <div class="rounded-full p-1 bg-gradient-to-r from-red-500 to-orange-500">
+                class="absolute inset-0 bg-[url('/logo.png')] opacity-10 bg-repeat transform scale-50"
+              ></div>
+            </div>
+
+            <div class="px-6 pb-8 text-center relative">
+              <!-- Profile Image -->
+              <div class="relative -mt-16 mb-4 inline-block">
+                <div class="p-1.5 bg-white dark:bg-gray-800 rounded-full">
                   <img
                     :src="candidate.photo_url || 'https://placehold.co/300x300'"
-                    class="h-44 w-44 object-cover rounded-full shadow-xl group-hover:scale-105 transition-transform duration-500"
+                    class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-gray-100 dark:border-gray-700 shadow-lg"
                   />
                 </div>
+                <div
+                  class="absolute bottom-1 right-1 bg-white p-1.5 rounded-full shadow-md w-12 h-12 flex items-center justify-center border border-gray-200"
+                >
+                  <img :src="getSymbol()" class="w-8 h-8 object-contain" />
+                </div>
               </div>
-              <div
-                class="absolute bottom-0 right-0 rounded-full p-px bg-gradient-to-r from-red-500 to-orange-500 shadow-lg w-16 h-16 flex items-center justify-center transform group-hover:rotate-12 transition duration-500 z-20"
-              >
-                <img
-                  :src="getSymbol()"
-                  class="w-14 h-14 object-contain rounded-full bg-white shadow-md"
-                />
-              </div>
-            </div>
-            <h1 class="text-3xl font-bold mb-2">{{ candidate.name }}</h1>
-            <div class="bg-white/20 px-4 py-1 rounded-full mb-2">
-              <p class="font-semibold">{{ candidate.constituency }}</p>
-            </div>
-            <p class="opacity-90">{{ candidate.designation }}</p>
-          </div>
 
-          <!-- Video Section -->
-          <div class="md:w-2/3 p-8">
-            <h2
-              class="text-2xl font-bold text-gray-800 dark:text-white mb-6 border-b dark:border-gray-700 pb-2"
-            >
-              পরিচিতি ভিডিও
-            </h2>
-            <div
-              v-if="candidate.video_link"
-              class="aspect-video rounded-lg overflow-hidden bg-black shadow-lg"
-            >
+              <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-1">
+                {{ candidate.name }}
+              </h1>
+              <p class="text-green-600 dark:text-green-400 font-medium mb-4">
+                {{ candidate.designation }}
+              </p>
+
+              <div
+                class="inline-block bg-gray-100 dark:bg-gray-700 px-4 py-1.5 rounded-full text-sm font-semibold text-gray-600 dark:text-gray-300 mb-6"
+              >
+                {{ candidate.constituency }}
+              </div>
+
+              <!-- Social Links -->
+              <div
+                v-if="candidate.facebook"
+                class="flex justify-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-700"
+              >
+                <a
+                  :href="candidate.facebook"
+                  target="_blank"
+                  class="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold hover:underline bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg transition"
+                >
+                  <span class="material-icons text-lg">facebook</span> ফেসবুকে যুক্ত হোন
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ২. ডান পাশের মেইন কন্টেন্ট (Tabs & Video) -->
+        <div class="lg:col-span-8 space-y-8">
+          <!-- Video Section (Always visible) -->
+          <div
+            v-if="candidate.video_link"
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-1 overflow-hidden"
+          >
+            <div class="aspect-video w-full rounded-xl overflow-hidden bg-black">
               <iframe
                 class="w-full h-full"
                 :src="getEmbedUrl(candidate.video_link)"
@@ -132,40 +134,77 @@ onMounted(async () => {
                 allowfullscreen
               ></iframe>
             </div>
+          </div>
+
+          <!-- Dynamic Tabs Section -->
+          <div
+            v-if="Array.isArray(candidate.biography) && candidate.biography.length > 0"
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700"
+          >
+            <!-- Tab Headers -->
             <div
-              v-else
-              class="h-64 bg-gray-100 dark:bg-gray-700 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500"
+              class="flex flex-wrap border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
             >
-              <p>ভিডিও উপলব্ধ নেই</p>
+              <button
+                v-for="(section, index) in candidate.biography"
+                :key="index"
+                @click="activeTab = index"
+                class="px-6 py-4 text-sm md:text-base font-bold transition-all duration-300 relative outline-none focus:outline-none"
+                :class="
+                  activeTab === index
+                    ? 'text-green-600 dark:text-green-400 bg-white dark:bg-gray-800'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                "
+              >
+                {{ section.title }}
+                <!-- Active Indicator Line -->
+                <span
+                  v-if="activeTab === index"
+                  class="absolute top-0 left-0 w-full h-1 bg-green-500 rounded-b"
+                ></span>
+              </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="p-8 md:p-10 min-h-[300px]">
+              <transition name="fade" mode="out-in">
+                <div :key="activeTab" class="animate-fade-in">
+                  <h2
+                    class="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center"
+                  >
+                    <span class="material-icons text-green-600 dark:text-green-400 mr-2"
+                      >verified</span
+                    >
+                    {{ candidate.biography[activeTab].title }}
+                  </h2>
+                  <!-- Rich Text Content -->
+                  <div
+                    class="prose-content text-justify"
+                    v-html="candidate.biography[activeTab].content"
+                  ></div>
+                </div>
+              </transition>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Biography Section -->
-      <div
-        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 md:p-12 border border-transparent dark:border-gray-700 transition-colors"
-      >
-        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
-          <span class="material-icons text-green-600 dark:text-green-400 mr-2">history_edu</span>
-          জীবন বৃত্তান্ত ও ভিশন
-        </h2>
+          <!-- Fallback if data is not array (Old data support) -->
+          <div v-else class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+            <div class="prose-content text-justify" v-html="candidate.biography"></div>
+          </div>
 
-        <!-- Rich Text Content -->
-        <div class="prose-content text-justify" v-html="candidate.biography"></div>
-
-        <div class="mt-10 pt-6 border-t dark:border-gray-700">
-          <router-link
-            to="/"
-            class="inline-flex items-center bg-green-600 text-white px-6 py-2 rounded-full font-bold hover:bg-green-700 transition shadow-lg"
-          >
-            <span class="material-icons mr-2">arrow_back</span> ফিরে যান
-          </router-link>
+          <!-- Back Button -->
+          <div class="mt-4">
+            <router-link
+              to="/"
+              class="inline-flex items-center text-gray-500 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 font-medium transition"
+            >
+              <span class="material-icons mr-2">arrow_back</span> হোমপেজে ফিরে যান
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Error State -->
     <div v-else class="text-center py-20 flex-grow">
       <h2 class="text-2xl text-red-500 mb-4">প্রার্থীর তথ্য পাওয়া যায়নি!</h2>
       <router-link to="/" class="text-blue-500 underline">হোমপেজে ফিরে যান</router-link>
@@ -176,41 +215,55 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* Rich Text Styles (Manual CSS to avoid Tailwind conflict) */
+/* Fade Animation for Tabs */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Rich Text Styles */
 :deep(.prose-content p) {
-  margin-bottom: 1rem;
-  color: #374151; /* gray-700 */
-  line-height: 1.75;
+  margin-bottom: 1.25rem;
+  color: #4b5563;
+  line-height: 1.8;
 }
-
-:deep(.prose-content h2) {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-  color: #1f2937; /* gray-800 */
-}
-
 :deep(.prose-content ul) {
-  list-style-type: disc;
-  padding-left: 1.5em;
-  margin-bottom: 1rem;
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1.5rem;
+}
+:deep(.prose-content ul li) {
+  position: relative;
+  padding-left: 1.75rem;
+  margin-bottom: 0.75rem;
   color: #374151;
 }
-
-:deep(.prose-content strong) {
+:deep(.prose-content ul li::before) {
+  content: '✔';
+  position: absolute;
+  left: 0;
+  color: #16a34a;
   font-weight: bold;
-  color: #111827;
+}
+:deep(.prose-content h3) {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #15803d;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Dark Mode Overrides */
 :global(.dark) :deep(.prose-content p),
-:global(.dark) :deep(.prose-content ul) {
-  color: #d1d5db; /* gray-300 */
+:global(.dark) :deep(.prose-content ul li) {
+  color: #d1d5db;
 }
-
-:global(.dark) :deep(.prose-content h2),
-:global(.dark) :deep(.prose-content strong) {
-  color: #ffffff;
+:global(.dark) :deep(.prose-content h3) {
+  color: #4ade80;
 }
 </style>
