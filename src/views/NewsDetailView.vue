@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue' // ফুটার যুক্ত করা হলো
 import api from '@/axios'
+import CommentSection from '@/components/CommentSection.vue'
 
 const route = useRoute()
 const news = ref(null)
@@ -106,6 +107,7 @@ onMounted(async () => {
             </router-link>
           </div>
         </div>
+        <CommentSection :blog-id="news.id" :comments="news.comments" />
       </div>
     </div>
 

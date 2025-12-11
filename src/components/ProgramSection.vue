@@ -18,14 +18,9 @@ const selectedDate = ref('')
 const selectedCandidate = ref('')
 const selectedConstituency = ref('')
 
-// Filtered programs
-// **পরিবর্তন:** props.programs ব্যবহার করুন এবং নিশ্চিত করুন এটি একটি Array (|| [])
 const filteredPrograms = computed(() => {
-  // programs প্রপসটি ব্যবহার করুন এবং ডেটা লোড না হওয়া পর্যন্ত খালি অ্যারে (|| []) ব্যবহার করুন
   const programsArray = props.programs || []
 
-  // ত্রুটিযুক্ত কোড: programs.filter
-  // এখন ঠিক কোড:
   return programsArray.filter((p) => {
     const matchDate = selectedDate.value ? p.date === selectedDate.value : true
     const matchCandidate = selectedCandidate.value ? p.candidate === selectedCandidate.value : true
